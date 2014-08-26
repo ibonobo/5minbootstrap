@@ -19,8 +19,8 @@
   - name: Add deployment user
     action: user name=deploy password=$deploy_password
 
-  - name: Add authorized deploy key for Fred
-    action: authorized_key user=deploy key='$FILE(fred.pub)'
+  - name: Add authorized deploy key for IB
+    action: authorized_key user=deploy key='$FILE(ib.pub)'
 
   - name: Remove sudo group rights
     action: lineinfile dest=/etc/sudoers regexp="^%sudo" state=absent
