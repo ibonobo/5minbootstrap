@@ -2,8 +2,8 @@
 - hosts: newservers
   vars:
   - ubuntu_release: lucid
-  - logwatch_email: ops@practicalops.com
-  - deploy_password: '$6$AC3bdCF7!$rVroC3j8Ue5M2sEsJeXOzfztBNaBzKEiOzfkOSpqDHjcDDLP65dSRlUeHSir9JiC1k6AAWS2lYHJzmuxbojz0/'
+  - logwatch_email: indelible.bonobo@gmail.com
+  - deploy_password: '$6$AC3bdCF7!$eHIelM7KoGe6.3wM6lHWbLjm63unpALTbNf.tnbSRfg8Wkb3wjSWPNglp0QWP3WtwrYJLy78l8BD86OQ7hP5T0'
     # crypted password, generated on a Linux box using: echo 'import crypt,getpass; print crypt.crypt(getpass.getpass(), "$6$AC3bdCF7!")' | python -
 
   tasks:
