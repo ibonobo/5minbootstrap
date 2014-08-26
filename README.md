@@ -56,7 +56,12 @@ to grant me login access to your server, you probably want to change
 that. :-)
 
 
-## Step 5: Run the playbook
+## Step 5: Modify the playbook variables.
+
+You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
+
+
+## Step 6: Run the playbook
 
 This is the needed invocation *for Vagrant*:
 
@@ -66,7 +71,7 @@ If you are logging into a fresh Linode, or another sytem where you only have the
 
     yourmachine ~/5minbootstrap$ ansible-playbook -i hosts.ini bootstrap.yml --user root --ask-pass
 	
-## Step 6: Go get a cup of coffee because you're DONE.
+## Step 7: Go get a cup of coffee because you're DONE.
 
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
