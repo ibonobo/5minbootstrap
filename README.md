@@ -10,7 +10,7 @@ There's a blog post that I wrote to go along with this.  Check it out!
 
 http://practicalops.com/my-first-5-minutes-on-a-server.html
 
-IB EDIT: changed .pub; need to modify YML for no fixed IP
+IB EDIT: changed .pub; need to modify YML for no fixed IP or eliminate hosts.ini
 
 TL;DR
 =====
@@ -50,7 +50,7 @@ IB EDIT: I want to leave the possibility of login from any email.
 
 ## Step 4: Update the SSH public key.
 
-    yourmachine ~/5minbootstrap$ cp ~/.ssh/id_dsa.pub ./ib.pub
+    yourmachine ~/5minbootstrap$ cp ~/.ssh/id_dsa.pub ./ibonobo.pub
 
 For simplicity I provided my public key in the repo.  Unless you want
 to grant me login access to your server, you probably want to change
