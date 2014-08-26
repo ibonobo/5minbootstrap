@@ -10,6 +10,7 @@ There's a blog post that I wrote to go along with this.  Check it out!
 
 http://practicalops.com/my-first-5-minutes-on-a-server.html
 
+IB EDIT: changed .pub; need to modify YML for no fixed IP
 
 TL;DR
 =====
