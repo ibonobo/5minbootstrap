@@ -1,14 +1,12 @@
 5minbootstrap
 =============
 
-Bootstrap and secure your server in 5 minutes flat.  A riff on this excellent post:
+Bootstrap and secure your server in 5 minutes flat.  A riff on these excellent posts:
 
 http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
-
-
-There's a blog post that I wrote to go along with this.  Check it out!
-
 http://practicalops.com/my-first-5-minutes-on-a-server.html
+
+http://www.consumedconsumer.org/2014/08/how-to-quickly-set-up-your-vps.html
 
 IB EDIT: changed .pub from fred;
 
@@ -24,7 +22,7 @@ Run:
 Enter the initial root password from your hosting provider, then run:
 
 	root@server# passwd
-IB note: on a minimal Debian install, you might have to run first apt-get update && apt-get install git ansible nano sshpass
+IB note: on a minimal Debian install, you might have to run  apt-get update && apt-get install git ansible nano sshpass
 
 ## Step 2: Fetch the bootstrap recipe
 
@@ -59,7 +57,7 @@ that. :-)
 ## Step 5: Modify the playbook variables.
 
 You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
-also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be so remove those
+also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45
 //      "o=Debian,a=stable";
 //      "o=Debian,a=stable-updates";
 //      "o=Debian,a=proposed-updates";
@@ -68,17 +66,18 @@ also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) bu
 
 ## Step 6: Run the playbook
 
-If you are logging into a fresh Linode, or another sytsem where you only have the `root` user, you need to run this command:
+If you are logging into a fresh Linode, or another system where you only have the `root` user, you need to run this command:
 
     yourmachine ~/5minbootstrap$ ansible-playbook -i hosts.ini bootstrap.yml --user root --ask-pass
 (otherwise, on Vagrant, --ask-pass --sudo after .yml)
 
 IB note: On a minimal Debian install I get this error. 
 "Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."
-To get key: ssh-keyscan -t rsa server_ip >>  >> ~/.ssh/known_hosts
+To get key: ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
 That finally got the ball rolling.
 	
 ## Step 7: Go get a cup of coffee because you're DONE.
 
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
+TO DO: ADD / modify port + 45-44
