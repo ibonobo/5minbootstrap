@@ -24,7 +24,7 @@ Run:
 Enter the initial root password from your hosting provider, then run:
 
 	root@server# passwd
-
+IB note: on a minimal Debian install, you might have to run apt-get update && apt-get install git ansible nano
 
 ## Step 2: Fetch the bootstrap recipe
 
@@ -45,7 +45,6 @@ Edit the `hosts.ini` that came with the repository.  Replace
 
     [newservers]
 	127.0.0.1:2222
-IB EDIT: I want to leave the possibility of login from any email.
 	
 
 ## Step 4: Update the SSH public key.
@@ -60,6 +59,11 @@ that. :-)
 ## Step 5: Modify the playbook variables.
 
 You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
+also, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be
+//      "o=Debian,a=stable";
+//      "o=Debian,a=stable-updates";
+//      "o=Debian,a=proposed-updates";
+        "origin=Debian,archive=stable,label=Debian-Security";
 
 
 ## Step 6: Run the playbook
