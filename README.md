@@ -22,7 +22,8 @@ Run:
 Enter the initial root password from your hosting provider, then run:
 
 	root@server# passwd
-IB note: on a minimal Debian install, you might have to run  apt-get update && apt-get install git ansible nano sshpass
+IB note: on a minimal Debian install, you might have to run  
+$ apt-get update && apt-get install git ansible nano sshpass
 
 ## Step 2: Fetch the bootstrap recipe
 
@@ -73,7 +74,8 @@ If you are logging into a fresh Linode, or another system where you only have th
 
 IB note: On a minimal Debian install I get this error. 
 "Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."
-To get key: ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
+To get key: 
+$ ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
 That finally got the ball rolling.
 	
 ## Step 7: Go get a cup of coffee because you're DONE.
@@ -81,3 +83,16 @@ That finally got the ball rolling.
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
 TO DO: ADD / modify port + 45-44
+If you want logging, or more info, pass the -v flag to ansible-playbook on the command line and you'll see the stdout and stderr for each task executed:
+
+$ ansible-playbook -v playbook.yaml
+Ansible also has built-in support for logging. Add the following lines to your ansible configuration file:
+
+[defaults] 
+log_path=/path/to/logfile
+
+Ansible will look in several places for the config file:
+
+ansible.cfg in the current directory where you ran ansible-playbook
+~/.ansible.cfg
+/etc/ansible/ansible.cfg
