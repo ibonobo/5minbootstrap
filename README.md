@@ -1,8 +1,8 @@
 5minbootstrap
 =============
 
-Bootstrap and secure your server in 5 minutes flat using Ansible on another Unix box you control. On a minimal Debian install, you might have to run  
-$ apt-get update && apt-get install git ansible nano sshpass
+Bootstrap and secure your server in 5 minutes flat using Ansible on another Unix box you control, referred to as "yourmachine". On a minimal Debian install, you might have to run first  
+	yourmachine$ apt-get update && apt-get install git ansible nano sshpass
 
 A riff on these excellent posts:
 
@@ -26,7 +26,8 @@ Run:
 Enter the initial root password from your hosting provider, then run:
 
 	root@server# passwd
-
+	root@server# apt-get update && apt-get upgrade
+  
 
 ## Step 2: Fetch the bootstrap recipe
 
@@ -75,33 +76,32 @@ If you are logging into a fresh Linode, or another system where you only have th
     yourmachine ~/5minbootstrap$ ansible-playbook -i hosts.ini bootstrap.yml --user root --ask-pass
 (otherwise, on Vagrant, --ask-pass --sudo after .yml)
 
-IB note: On a minimal Debian install I get this error. 
-"Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."
-To get key: 
+IB note: On a minimal Debian install I get this error.  
+"Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."  
+To get key:  
 $ ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
-That finally got the ball rolling.
+That finally got the ball rolling, but the it hang at update, so when first logging in and changing password, an update+upg may be necessary.
 	
 ## Step 7: Go get a cup of coffee because you're DONE.
 
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
-IB TO DO: 
-1. ADD / modify port + 45-44
-2. If you want logging, or more info, pass the -v flag to ansible-playbook on the command line and you'll see the stdout and stderr for each task executed:
 
-$ ansible-playbook -v playbook.yaml
-Ansible also has built-in support for logging. Add the following lines to your ansible configuration file:
-
-[defaults] 
-log_path=/path/to/logfile
-
-Ansible will look in several places for the config file:
-
-ansible.cfg in the current directory where you ran ansible-playbook
-~/.ansible.cfg
-/etc/ansible/ansible.cfg
-
+IB TO DO:  
+  
+1. ADD / modify port + 45-44  
+  
+2. If you want logging, or more info, pass the -v flag to ansible-playbook on the command line and you'll see the stdout and stderr for each task executed:  
+	$ ansible-playbook -v playbook.yaml  
+Ansible also has built-in support for logging. Add the following lines to your ansible configuration file:  
+	[defaults]  
+	log_path=/path/to/logfile  
+Ansible will look in several places for the config file:  
+	1. ansible.cfg in the current directory where you ran ansible-playbook  
+	2. ~/.ansible.cfg  
+	3. /etc/ansible/ansible.cfg  
+  
 3. Some servers have the time zone off, which messes up the logs. To change the timezone interactively, do  
-$ dpkg-reconfigure tzdata  
-to do it non-interactively (scripted), use
-$ echo "US/Eastern" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+	$ dpkg-reconfigure tzdata  
+to do it non-interactively (scripted), use in ansible  
+	$ echo "US/Eastern" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata  
