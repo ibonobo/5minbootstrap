@@ -62,11 +62,11 @@ that. :-)
 ## Step 5: Modify the playbook variables.
 
 You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
-also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45  
-//      "o=Debian,a=stable";  
-//      "o=Debian,a=stable-updates";  
-//      "o=Debian,a=proposed-updates";  
-        "origin=Debian,archive=stable,label=Debian-Security";  
+also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45 to reflect  
+	//      "o=Debian,a=stable";  
+	//      "o=Debian,a=stable-updates";  
+	//      "o=Debian,a=proposed-updates";  
+	        "origin=Debian,archive=stable,label=Debian-Security";  
 
 
 ## Step 6: Run the playbook
@@ -77,9 +77,9 @@ If you are logging into a fresh Linode, or another system where you only have th
 (otherwise, on Vagrant, --ask-pass --sudo after .yml)
 
 IB note: On a minimal Debian install I get this error.  
-"Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."  
+	"Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."  
 To get key:  
-$ ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
+	$ ssh-keyscan -t rsa server_ip >> ~/.ssh/known_hosts
 That finally got the ball rolling, but the it hang at update, so when first logging in and changing password, an update+upg may be necessary.
 	
 ## Step 7: Go get a cup of coffee because you're DONE.
@@ -87,7 +87,7 @@ That finally got the ball rolling, but the it hang at update, so when first logg
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
 
-IB TO DO:  
+## IB TO DO:  
   
 1. ADD / modify port + 45-44  
   
