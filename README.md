@@ -1,11 +1,15 @@
 5minbootstrap
 =============
 
-Bootstrap and secure your server in 5 minutes flat.  A riff on these excellent posts:
+Bootstrap and secure your server in 5 minutes flat using Ansible on another Unix box you control. On a minimal Debian install, you might have to run  
+$ apt-get update && apt-get install git ansible nano sshpass
 
-http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
+A riff on these excellent posts:
+
+http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers  
 http://practicalops.com/my-first-5-minutes-on-a-server.html
 
+More details:
 http://www.consumedconsumer.org/2014/08/how-to-quickly-set-up-your-vps.html
 
 IB EDIT: changed .pub from fred;
@@ -22,8 +26,7 @@ Run:
 Enter the initial root password from your hosting provider, then run:
 
 	root@server# passwd
-IB note: on a minimal Debian install, you might have to run  
-$ apt-get update && apt-get install git ansible nano sshpass
+
 
 ## Step 2: Fetch the bootstrap recipe
 
@@ -58,11 +61,11 @@ that. :-)
 ## Step 5: Modify the playbook variables.
 
 You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
-also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45
-//      "o=Debian,a=stable";
-//      "o=Debian,a=stable-updates";
-//      "o=Debian,a=proposed-updates";
-        "origin=Debian,archive=stable,label=Debian-Security";
+also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45  
+//      "o=Debian,a=stable";  
+//      "o=Debian,a=stable-updates";  
+//      "o=Debian,a=proposed-updates";  
+        "origin=Debian,archive=stable,label=Debian-Security";  
 
 
 ## Step 6: Run the playbook
@@ -82,8 +85,9 @@ That finally got the ball rolling.
 
 I prefer hand-ground French pressed coffee myself.  Tea is also fine.
 
-TO DO: ADD / modify port + 45-44
-If you want logging, or more info, pass the -v flag to ansible-playbook on the command line and you'll see the stdout and stderr for each task executed:
+IB TO DO: 
+1. ADD / modify port + 45-44
+2. If you want logging, or more info, pass the -v flag to ansible-playbook on the command line and you'll see the stdout and stderr for each task executed:
 
 $ ansible-playbook -v playbook.yaml
 Ansible also has built-in support for logging. Add the following lines to your ansible configuration file:
@@ -96,3 +100,8 @@ Ansible will look in several places for the config file:
 ansible.cfg in the current directory where you ran ansible-playbook
 ~/.ansible.cfg
 /etc/ansible/ansible.cfg
+
+3. Some servers have the time zone off, which messes up the logs. To change the timezone interactively, do  
+$ dpkg-reconfigure tzdata  
+to do it non-interactively (scripted), use
+$ echo "US/Eastern" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
