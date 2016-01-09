@@ -67,6 +67,7 @@ also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) bu
 	//      "o=Debian,a=stable-updates";  
 	//      "o=Debian,a=proposed-updates";  
 	        "origin=Debian,archive=stable,label=Debian-Security";  
+Seymore Butts: https://www.howtoforge.com/how-to-configure-automatic-updates-on-debian-wheezy
 
 
 ## Step 6: Run the playbook
