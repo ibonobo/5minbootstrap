@@ -2,9 +2,12 @@
 - hosts: newservers
   vars:
   - ubuntu_release: lucid
+  - sshd_port: 22
   - logwatch_email: indelible.bonobo@gmail.com
+  - deploy_username: deploy
   - deploy_password: '$6$AC3bdCF7!$eHIelM7KoGe6.3wM6lHWbLjm63unpALTbNf.tnbSRfg8Wkb3wjSWPNglp0QWP3WtwrYJLy78l8BD86OQ7hP5T0'
     # crypted password, generated on a Linux box using: echo 'import crypt,getpass; print crypt.crypt(getpass.getpass(), "$6$AC3bdCF7!")' | python -
+    # ibnote: varying deploy user name should make the deployment slightly more secure; must check if variables can be passed within quotes and if yes, change deploy in sudoers line + port # in port line
 
   tasks:
   - name: Update APT package cache
@@ -17,16 +20,17 @@
     action: apt pkg=fail2ban state=installed
 
   - name: Add deployment user
-    action: user name=deploy password=$deploy_password
+    action: user name=$deploy_username password=$deploy_password
 
-  - name: Add authorized deploy key for IB
-    action: authorized_key user=deploy key='$FILE(ibonobo.pub)'
+  - name: Add authorized deploy key for deploy user
+    action: authorized_key user=$deploy_username key='$FILE(ibonobo.pub)'
 
   - name: Remove sudo group rights
     action: lineinfile dest=/etc/sudoers regexp="^%sudo" state=absent
 
   - name: Add deploy user to sudoers
     action: lineinfile dest=/etc/sudoers regexp="deploy ALL" line="deploy ALL=(ALL) ALL" state=present
+# must change deploy to variable but not sure if it can be passed inside of quotes
 
   - name: Disallow root SSH access
     action: lineinfile dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
@@ -35,6 +39,10 @@
   - name: Disallow password authentication
     action: lineinfile dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
     notify: Restart sshd
+
+#  - name: Change SSHd port
+#    action: lineinfile dest=/etc/ssh/sshd_config regexp="^Port" line="Port 22" state=present
+#    notify: Restart sshd
 
   - name: Install unattended-upgrades
     action: apt pkg=unattended-upgrades state=present
