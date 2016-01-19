@@ -43,6 +43,10 @@
   - name: Change SSHd port
     action: lineinfile dest=/etc/ssh/sshd_config regexp="^Port" line="Port $sshd_port" state=present
     notify: Restart sshd
+    
+  - name: Obfuscate Debian Fingerprints for OS identification
+    action: lineinfile dest=/etc/ssh/sshd_config regexp="^DebianBanner" line="DebianBanner no" state=present
+    notify: Restart sshd
 
   - name: Install unattended-upgrades
     action: apt pkg=unattended-upgrades state=present
