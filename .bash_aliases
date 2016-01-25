@@ -209,3 +209,6 @@ alias pcn='python -i -Qnew -c "from math import *;from pylab import *"'
 alias whatsmyip='/sbin/ifconfig -a | grep inet'
 alias myipaddr='hostname -I'
 alias ipuri='ip addr show'
+
+#to recursively unzip all zip archive in the current directory and its subdirectories
+alias recunzip='find . -name "*.zip" | while read filename; do unzip -o -d "`dirname "$filename"`" "$filename"; done;'
