@@ -106,3 +106,22 @@ Ansible will look in several places for the config file:
 	$ dpkg-reconfigure tzdata  
 to do it non-interactively (scripted), use in ansible  
 	$ echo "US/Eastern" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata  
+	
+4. Regenerate SSHD keys
+# /bin/rm -v /etc/ssh/ssh_host_*
+
+Sample outputs:
+
+removed '/etc/ssh/ssh_host_dsa_key'
+removed '/etc/ssh/ssh_host_dsa_key.pub'
+removed '/etc/ssh/ssh_host_ecdsa_key'
+removed '/etc/ssh/ssh_host_ecdsa_key.pub'
+removed '/etc/ssh/ssh_host_ed25519_key'
+removed '/etc/ssh/ssh_host_ed25519_key.pub'
+removed '/etc/ssh/ssh_host_rsa_key'
+removed '/etc/ssh/ssh_host_rsa_key.pub'
+Step 2 – Debian or Ubuntu Linux Regenerate OpenSSH Host Keys
+Now create a new set of keys on your SSHD server, enter:
+# dpkg-reconfigure openssh-server
+# service ssh restart
+ on host machine: $ ssh-keygen -R remote-server-name-here
