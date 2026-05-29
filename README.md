@@ -108,7 +108,7 @@ to do it non-interactively (scripted), use in ansible
 	$ echo "US/Eastern" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata  
 	
 4. Regenerate SSHD keys
-# /bin/rm -v /etc/ssh/ssh_host_*
+/bin/rm -v /etc/ssh/ssh_host_*
 
 Sample outputs:
 
@@ -122,8 +122,8 @@ removed '/etc/ssh/ssh_host_rsa_key'
 removed '/etc/ssh/ssh_host_rsa_key.pub'
 Step 2 – Debian or Ubuntu Linux Regenerate OpenSSH Host Keys
 Now create a new set of keys on your SSHD server, enter:
-# dpkg-reconfigure openssh-server
-# service ssh restart
+dpkg-reconfigure openssh-server
+service ssh restart
  on host machine: $ ssh-keygen -R remote-server-name-here
 
 ## Updated through PrplP
@@ -156,11 +156,11 @@ Ubuntu release — updated from lucid (10.04, EOL 2015) to focal (20.04 LTS)
 Added changed_when: false to debconf command (it's idempotent but doesn't report state)
 
 ### How to run
-# Initial bootstrap (as root with password):
+#Initial bootstrap (as root with password):
 ansible-playbook -i hosts.ini bootstrap.yml -u root -k
 
-# Or with key-based root access:
+#Or with key-based root access:
 ansible-playbook -i hosts.ini bootstrap.yml -u root
 
-# After bootstrap, connect as deploy user:
+#After bootstrap, connect as deploy user:
 ansible-playbook -i hosts.ini playbook.yml -u deploy
