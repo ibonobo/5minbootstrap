@@ -125,3 +125,42 @@ Now create a new set of keys on your SSHD server, enter:
 # dpkg-reconfigure openssh-server
 # service ssh restart
  on host machine: $ ssh-keygen -R remote-server-name-here
+
+## Updated through PrplP
+### Key Changes
+#### Syntax Updates
+Deprecated action: keyword removed — modern Ansible uses module names directly
+
+Variable syntax — changed from $variable to {{ variable }} (Jinja2 template syntax, required since Ansible 2.x)
+
+Fully qualified collection names — all modules now use FQCN like ansible.builtin.apt, ansible.posix.authorized_key
+
+Added become: true at play level instead of using --sudo flag
+
+#### Security Improvements
+Added validate: parameter to sudoers modifications to prevent breaking sudo
+
+Changed deploy user to NOPASSWD:ALL — since you're disabling password auth, sudo prompts would lock you out
+
+SSH service name — changed from sshd to ssh (Debian/Ubuntu standard)
+
+File modes — added explicit mode: parameters for security
+
+#### Functional Fixes
+$FILE() lookup — replaced with lookup('file', 'ibonobo.pub')
+
+apt upgrade — changed from raw command to proper apt module with upgrade: dist
+
+Ubuntu release — updated from lucid (10.04, EOL 2015) to focal (20.04 LTS)
+
+Added changed_when: false to debconf command (it's idempotent but doesn't report state)
+
+### How to run
+# Initial bootstrap (as root with password):
+ansible-playbook -i hosts.ini bootstrap.yml -u root -k
+
+# Or with key-based root access:
+ansible-playbook -i hosts.ini bootstrap.yml -u root
+
+# After bootstrap, connect as deploy user:
+ansible-playbook -i hosts.ini playbook.yml -u deploy
