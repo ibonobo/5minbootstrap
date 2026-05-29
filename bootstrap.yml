@@ -1,74 +1,134 @@
 ---
 - hosts: newservers
+  become: true
   vars:
-  - unix_release: lucid
-  - sshd_port: 22
-  - logwatch_email: indelible.bonobo@gmail.com
-  - deploy_username: deploy
-  - deploy_password: '$6$AC3bdCF7!$eHIelM7KoGe6.3wM6lHWbLjm63unpALTbNf.tnbSRfg8Wkb3wjSWPNglp0QWP3WtwrYJLy78l8BD86OQ7hP5T0'
-    # crypted password, generated on a Linux box using: echo 'import crypt,getpass; print crypt.crypt(getpass.getpass(), "$6$AC3bdCF7!")' | python -
-    # ibnote: varying deploy user name should make the deployment slightly more secure; must check if variables can be passed within quotes and if yes, change deploy in sudoers line + port # in port line
+    unix_release: focal  # Updated from lucid (Ubuntu 10.04, EOL 2015) to focal (20.04 LTS)
+    sshd_port: 22
+    logwatch_email: indelible.bonobo@gmail.com
+    deploy_username: deploy
+    deploy_password: '$6$AC3bdCF7!$eHIelM7KoGe6.3wM6lHWbLjm63unpALTbNf.tnbSRfg8Wkb3wjSWPNglp0QWP3WtwrYJLy78l8BD86OQ7hP5T0'
+    # Crypted password, generated on Linux: python3 -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
 
   tasks:
   - name: Update APT package cache
-    action: apt update_cache=yes
+    ansible.builtin.apt:
+      update_cache: true
+      cache_valid_time: 3600
 
   - name: Run apt-get upgrade
-    action: command apt-get upgrade
+    ansible.builtin.apt:
+      upgrade: dist
+      update_cache: true
 
   - name: Install fail2ban
-    action: apt pkg=fail2ban state=installed
+    ansible.builtin.apt:
+      pkg: fail2ban
+      state: present
 
   - name: Add deployment user
-    action: user name=$deploy_username password=$deploy_password
+    ansible.builtin.user:
+      name: "{{ deploy_username }}"
+      password: "{{ deploy_password }}"
+      shell: /bin/bash
+      create_home: true
 
   - name: Add authorized deploy key for deploy user
-    action: authorized_key user=$deploy_username key='$FILE(ibonobo.pub)'
+    ansible.posix.authorized_key:
+      user: "{{ deploy_username }}"
+      key: "{{ lookup('file', 'ibonobo.pub') }}"
+      state: present
 
   - name: Remove sudo group rights
-    action: lineinfile dest=/etc/sudoers regexp="^%sudo" state=absent
+    ansible.builtin.lineinfile:
+      dest: /etc/sudoers
+      regexp: "^%sudo"
+      state: absent
+      validate: '/usr/sbin/visudo -cf %s'
 
   - name: Add deploy user to sudoers
-    action: lineinfile dest=/etc/sudoers regexp="$deploy_username ALL" line="$deploy_username ALL=(ALL) ALL" state=present
-# not sure if it can be passed inside of quotes
+    ansible.builtin.lineinfile:
+      dest: /etc/sudoers
+      regexp: "{{ deploy_username }} ALL"
+      line: "{{ deploy_username }} ALL=(ALL) NOPASSWD:ALL"
+      state: present
+      validate: '/usr/sbin/visudo -cf %s'
 
   - name: Disallow root SSH access
-    action: lineinfile dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+    ansible.builtin.lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^PermitRootLogin"
+      line: "PermitRootLogin no"
+      state: present
     notify: Restart sshd
 
   - name: Disallow password authentication
-    action: lineinfile dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+    ansible.builtin.lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^PasswordAuthentication"
+      line: "PasswordAuthentication no"
+      state: present
     notify: Restart sshd
 
   - name: Change SSHd port
-    action: lineinfile dest=/etc/ssh/sshd_config regexp="^Port" line="Port $sshd_port" state=present
+    ansible.builtin.lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^Port"
+      line: "Port {{ sshd_port }}"
+      state: present
     notify: Restart sshd
     
   - name: Obfuscate Debian Fingerprints for OS identification
-    action: lineinfile dest=/etc/ssh/sshd_config regexp="^DebianBanner" line="DebianBanner no" state=present
+    ansible.builtin.lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^DebianBanner"
+      line: "DebianBanner no"
+      state: present
     notify: Restart sshd
 
   - name: Install unattended-upgrades
-    action: apt pkg=unattended-upgrades state=present
+    ansible.builtin.apt:
+      pkg: unattended-upgrades
+      state: present
   
   - name: Adjust APT update intervals
-    action: copy src=config/apt_periodic dest=/etc/apt/apt.conf.d/10periodic
+    ansible.builtin.copy:
+      src: config/apt_periodic
+      dest: /etc/apt/apt.conf.d/10periodic
+      mode: '0644'
 
-  - name: Make sure unattended-upgrades only installs from $unix_release-security
-    action: lineinfile dest=/etc/apt/apt.conf.d/50unattended-upgrades regexp="$unix_release-updates" state=absent
+  - name: Make sure unattended-upgrades only installs from security updates
+    ansible.builtin.lineinfile:
+      dest: /etc/apt/apt.conf.d/50unattended-upgrades
+      regexp: "{{ unix_release }}-updates"
+      state: absent
 
   - name: Copy debconf selections so that Postfix can configure itself non-interactively
-    copy: src=config/postfix_selections  dest=/tmp/postfix_selections
+    ansible.builtin.copy:
+      src: config/postfix_selections
+      dest: /tmp/postfix_selections
+      mode: '0644'
 
   - name: Set up Postfix to relay mail
-    action: command debconf-set-selections /tmp/postfix_selections
+    ansible.builtin.command:
+      cmd: debconf-set-selections /tmp/postfix_selections
+    changed_when: false
 
   - name: Install logwatch
-    action: apt pkg=logwatch state=installed
+    ansible.builtin.apt:
+      pkg: logwatch
+      state: present
 
-  - name: Make logwatch mail $logwatch_email daily
-    action: lineinfile dest=/etc/cron.daily/00logwatch regexp="^/usr/sbin/logwatch" line="/usr/sbin/logwatch --output mail --mailto $logwatch_email --detail high" state=present create=yes
+  - name: Make logwatch mail daily
+    ansible.builtin.lineinfile:
+      dest: /etc/cron.daily/00logwatch
+      regexp: "^/usr/sbin/logwatch"
+      line: "/usr/sbin/logwatch --output mail --mailto {{ logwatch_email }} --detail high"
+      state: present
+      create: true
+      mode: '0755'
 
   handlers:
   - name: Restart sshd
-    action: service name=sshd state=restarted
+    ansible.builtin.service:
+      name: ssh
+      state: restarted
