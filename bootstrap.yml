@@ -127,8 +127,29 @@
       create: true
       mode: '0755'
 
+      - name: Set primary DNS in systemd-resolved
+      ansible.builtin.lineinfile:
+        dest: /etc/systemd/resolved.conf
+        regexp: "^#?DNS="
+        line: "DNS=2a01:4f8:cdc:123f::1 2a00:1098:2b::1"
+        state: present
+      notify: Restart systemd-resolved
+
+    - name: Set fallback DNS in systemd-resolved
+      ansible.builtin.lineinfile:
+        dest: /etc/systemd/resolved.conf
+        regexp: "^#?FallbackDNS="
+        line: "FallbackDNS=2a00:1098:2c::1"
+        state: present
+      notify: Restart systemd-resolved
+
   handlers:
   - name: Restart sshd
     ansible.builtin.service:
       name: ssh
+      state: restarted
+      
+  - name: Restart systemd-resolved
+    ansible.builtin.service:
+      name: systemd-resolved
       state: restarted
