@@ -2,7 +2,6 @@
 - hosts: newservers
   become: true
   vars:
-    unix_release: focal  # Updated from lucid (Ubuntu 10.04, EOL 2015) to focal (20.04 LTS)
     sshd_port: 22
     logwatch_email: indelible.bonobo@gmail.com
     deploy_username: deploy
@@ -99,7 +98,7 @@
   - name: Make sure unattended-upgrades only installs from security updates
     ansible.builtin.lineinfile:
       dest: /etc/apt/apt.conf.d/50unattended-upgrades
-      regexp: "{{ unix_release }}-updates"
+      regexp: "{{ ansible_distribution_release }}-updates"
       state: absent
 
   - name: Copy debconf selections so that Postfix can configure itself non-interactively
@@ -160,6 +159,7 @@
         content: |
           [sshd]
           enabled = true
+          port = {{ sshd_port }}
           backend = systemd
       notify: Restart fail2ban
 
