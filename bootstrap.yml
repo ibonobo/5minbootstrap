@@ -127,21 +127,41 @@
       create: true
       mode: '0755'
 
-      - name: Set primary DNS in systemd-resolved
+  - name: Check for outbound IPv4 connectivity
+      ansible.builtin.wait_for:
+        host: 1.1.1.1
+        port: 443
+        timeout: 5
+      register: ipv4_check
+      ignore_errors: true
+
+  - name: Set primary DNS in systemd-resolved (IPv6-only hosts)
       ansible.builtin.lineinfile:
         dest: /etc/systemd/resolved.conf
         regexp: "^#?DNS="
         line: "DNS=2a01:4f8:cdc:123f::1 2a00:1098:2b::1"
         state: present
+      when: ipv4_check is failed
       notify: Restart systemd-resolved
 
-    - name: Set fallback DNS in systemd-resolved
+  - name: Set fallback DNS in systemd-resolved (IPv6-only hosts)
       ansible.builtin.lineinfile:
         dest: /etc/systemd/resolved.conf
         regexp: "^#?FallbackDNS="
         line: "FallbackDNS=2a00:1098:2c::1"
         state: present
+      when: ipv4_check is failed
       notify: Restart systemd-resolved
+
+  - name: Configure fail2ban sshd jail
+      ansible.builtin.copy:
+        dest: /etc/fail2ban/jail.local
+        mode: '0644'
+        content: |
+          [sshd]
+          enabled = true
+          backend = systemd
+      notify: Restart fail2ban
 
   handlers:
   - name: Restart sshd
@@ -152,4 +172,9 @@
   - name: Restart systemd-resolved
     ansible.builtin.service:
       name: systemd-resolved
+      state: restarted
+
+  - name: Restart fail2ban
+    ansible.builtin.service:
+      name: fail2ban
       state: restarted
