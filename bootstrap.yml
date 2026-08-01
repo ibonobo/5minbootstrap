@@ -24,33 +24,39 @@
       pkg: fail2ban
       state: present
 
-  - name: Add deployment user
-    ansible.builtin.user:
-      name: "{{ deploy_username }}"
-      password: "{{ deploy_password }}"
-      shell: /bin/bash
-      create_home: true
+  - name: Bootstrap deploy user (only when connecting as root)
+      when: ansible_user == 'root'
+      block:
+        - name: Create deploy user
+          ansible.builtin.user:
+            name: "{{ deploy_username }}"
+            password: "{{ deploy_password }}"
+            shell: /bin/bash
+            create_home: true
 
-  - name: Add authorized deploy key for deploy user
-    ansible.posix.authorized_key:
-      user: "{{ deploy_username }}"
-      key: "{{ lookup('file', 'ibonobo.pub') }}"
-      state: present
+        - name: Set deploy user's authorized key
+          ansible.posix.authorized_key:
+            user: "{{ deploy_username }}"
+            key: "{{ lookup('file', 'ibonobo.pub') }}"
+#            state: present
 
-  - name: Remove sudo group rights
-    ansible.builtin.lineinfile:
-      dest: /etc/sudoers
-      regexp: "^%sudo"
-      state: absent
-      validate: '/usr/sbin/visudo -cf %s'
+        # ...any other deploy-user tasks currently in the play
 
-  - name: Add deploy user to sudoers
-    ansible.builtin.lineinfile:
-      dest: /etc/sudoers
-      regexp: "{{ deploy_username }} ALL"
-      line: "{{ deploy_username }} ALL=(ALL) NOPASSWD:ALL"
-      state: present
-      validate: '/usr/sbin/visudo -cf %s'
+
+        - name: Remove sudo group rights
+          ansible.builtin.lineinfile:
+            dest: /etc/sudoers
+            regexp: "^%sudo"
+            state: absent
+            validate: '/usr/sbin/visudo -cf %s'
+
+        - name: Add deploy user to sudoers
+          ansible.builtin.lineinfile:
+            dest: /etc/sudoers
+            regexp: "{{ deploy_username }} ALL"
+            line: "{{ deploy_username }} ALL=(ALL) NOPASSWD:ALL"
+            state: present
+            validate: '/usr/sbin/visudo -cf %s'
 
   - name: Disallow root SSH access
     ansible.builtin.lineinfile:
