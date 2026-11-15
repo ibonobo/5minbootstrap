@@ -1,3 +1,5 @@
+NOTE: consider using 'ansible-galaxy install geerlingguy.security' instead
+
 5minbootstrap
 =============
 
