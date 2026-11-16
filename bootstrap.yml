@@ -25,7 +25,7 @@
       state: present
 
   - name: Bootstrap deploy user (only when connecting as root)
-      when: ansible_user == 'root'
+    when: ansible_user == 'root'
       block:
         - name: Create deploy user
           ansible.builtin.user:
