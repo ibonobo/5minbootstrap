@@ -106,7 +106,7 @@
   - name: Make sure unattended-upgrades only installs from security updates
     ansible.builtin.lineinfile:
       dest: /etc/apt/apt.conf.d/50unattended-upgrades
-      regexp: "{{ ansible_distribution_release }}-updates"
+      regexp: "{{ ansible_facts['distribution'] }}-updates"
       state: absent
 
   - name: Copy debconf selections so that Postfix can configure itself non-interactively
