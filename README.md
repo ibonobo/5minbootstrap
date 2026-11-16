@@ -64,12 +64,7 @@ that. :-)
 ## Step 5: Modify the playbook variables.
 
 You don't want the original author to get your logs, so modify the email accordingly as well as the password > bootstrap.yml
-also, lines 44-45, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 44-45 to reflect  
-	//      "o=Debian,a=stable";  
-	//      "o=Debian,a=stable-updates";  
-	//      "o=Debian,a=proposed-updates";  
-	        "origin=Debian,archive=stable,label=Debian-Security";  
-Seymore Butts: https://www.howtoforge.com/how-to-configure-automatic-updates-on-debian-wheezy
+also, if Ubuntu it deletes stable (so that only security remain) but if Debian it should be also security only so modify to remove the rest or comment out 
 
 
 ## Step 6: Run the playbook
