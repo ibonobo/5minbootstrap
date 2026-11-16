@@ -5,8 +5,8 @@
     sshd_port: 22
     logwatch_email: indelible.bonobo@gmail.com
     deploy_username: deploy
-    deploy_password: '$6$AC3bdCF7!$eHIelM7KoGe6.3wM6lHWbLjm63unpALTbNf.tnbSRfg8Wkb3wjSWPNglp0QWP3WtwrYJLy78l8BD86OQ7hP5T0'
-    # Crypted password, generated on Linux: python3 -c 'import crypt,getpass; print(crypt.crypt(getpass.getpass(), crypt.mksalt(crypt.METHOD_SHA512)))'
+    deploy_password: '$6$yMPg6QF873xCwxER$GLNuqi2WSrLaqgbdi124TyrisY3zEj3nlGSwC6O9cqrY0X8qFnCO7Ba8bVxC9JfRfkd/F.CKa5dWMfEgtd1LL0'
+    # Crypted password, generate with 'openssl passwd -6 yourpassword'
 
   tasks:
   - name: Update APT package cache
